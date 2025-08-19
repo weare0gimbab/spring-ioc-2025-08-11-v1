@@ -1,6 +1,7 @@
 package com.ll.framework.ioc;
 
 import com.ll.domain.testPost.testPost.repository.TestPostRepository;
+import com.ll.domain.testPost.testPost.service.TestFacadePostService;
 import com.ll.domain.testPost.testPost.service.TestPostService;
 
 import java.util.HashMap;
@@ -22,14 +23,21 @@ public class ApplicationContext {
 
         Object bean = null;
         if (!beans.containsKey(beanName)) {
-            if ("testPostRepository".equals(beanName)) {
+            if ("testFacadePostService".equals(beanName)) {
+                TestPostService testPostService = genBean("testPostService");
+                TestPostRepository testPostRepository = genBean("testPostRepository");
+                bean = new TestFacadePostService(testPostService, testPostRepository);
+                beans.put(beanName, bean);
+            } else if ("testPostRepository".equals(beanName)) {
                 bean = new TestPostRepository();
                 beans.put(beanName, bean);
             } else if ("testPostService".equals(beanName)) {
-                TestPostRepository testPostRepository = new TestPostRepository();
+                TestPostRepository testPostRepository = genBean("testPostRepository");
                 bean = new TestPostService(testPostRepository);
                 beans.put(beanName, bean);
-            } else return null;
+            } else {
+                throw new IllegalArgumentException("Unknown bean name: " + beanName);
+            }
         }
         return (T) bean;
     }
