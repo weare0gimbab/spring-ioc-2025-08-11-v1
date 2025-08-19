@@ -20,12 +20,17 @@ public class ApplicationContext {
             return (T) beans.get(beanName);
         }
 
-        Object bean;
-        if ("testPostService".equals(beanName)) {
-            TestPostRepository testPostRepository = new TestPostRepository();
-            bean = new TestPostService(testPostRepository);
-            beans.put(beanName, bean);
-        } else return null;
+        Object bean = null;
+        if (!beans.containsKey(beanName)) {
+            if ("testPostRepository".equals(beanName)) {
+                bean = new TestPostRepository();
+                beans.put(beanName, bean);
+            } else if ("testPostService".equals(beanName)) {
+                TestPostRepository testPostRepository = new TestPostRepository();
+                bean = new TestPostService(testPostRepository);
+                beans.put(beanName, bean);
+            } else return null;
+        }
         return (T) bean;
     }
 }
